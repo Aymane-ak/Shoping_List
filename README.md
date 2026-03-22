@@ -46,3 +46,13 @@ git checkout -b feature/database
 git push -u origin feature/database
 
 
+
+## index.js point d'entrée du serveur Express. Ce fichier a pour rôle de :
+
+1) Importer Express
+2) Créer l'application Express
+3) Configurer CORS
+4) Dire à Express d'accepter le JSON
+5) Brancher les routes
+6) Démarrer le serveur sur un port
+
