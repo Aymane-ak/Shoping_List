@@ -10,7 +10,7 @@ router.get('/', async (req, res) => {
         res.json(result.rows)
     }
     catch (error) {
-        return res.status(500).json({error : error.message})    }
+        return res.status(500).json({error : error.message})}
     
 })
 
@@ -25,9 +25,22 @@ router.post('/', async (req, res) => {
     }
     catch(error) {
         return res.status(500).json({error : error.message })
+    }  
+})
+
+router.delete('/:id',async(req,res) => {
+
+    if(!req.params.id) {
+        return res.status(400).json( {error : error.message})    
+    }
+    try {
+        const result = await pool.query('DELETE FROM lists WHERE id = $1',[req.params.id])
+        return res.status(200).json({ message : "Liste supprimée"})
+    }
+    catch (error) {
+        return res.status(500).json({ error : error.message})
     }
     
-
-})  
+})
 
 module.exports = router

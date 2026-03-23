@@ -13,3 +13,4 @@ CREATE TABLE products (
   created_at TIMESTAMP DEFAULT NOW(), 
   list_id INT REFERENCES lists(id)
 );
+
