@@ -1,7 +1,7 @@
 CREATE TABLE lists (
   id SERIAL PRIMARY KEY,
   name VARCHAR(50),
-  created_at TIMESTAMP
+  created_at TIMESTAMP DEFAULT NOW()
 );
 
 CREATE TABLE products (
@@ -10,6 +10,6 @@ CREATE TABLE products (
   description VARCHAR(150),
   price DECIMAL,
   bought BOOLEAN,
-  created_at TIMESTAMP,
+  created_at TIMESTAMP DEFAULT NOW(), 
   list_id INT REFERENCES lists(id)
 );

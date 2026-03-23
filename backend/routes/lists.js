@@ -4,9 +4,30 @@ const router  = express.Router()
 
 
 
-router.get('/', async (req, res) => {
-    const result = await pool.query( 'SELECT * FROM lists')
-    res.send(result.rows)
+router.get('/', async (req, res) => {   
+    try {
+        const result = await pool.query( 'SELECT * FROM lists')
+        res.json(result.rows)
+    }
+    catch (error) {
+        return res.status(500).json({error : error.message})    }
+    
 })
+
+router.post('/', async (req, res) => {
+    if(! req.body.name){
+        return res.status(400).json({ error : error.message})
+    }
+
+    try {
+        const result = await pool.query( 'INSERT INTO lists (name) VALUES ($1) RETURNING * ' ,[req.body.name])
+        return res.status(201).json(result.rows[0])
+    }
+    catch(error) {
+        return res.status(500).json({error : error.message })
+    }
+    
+
+})  
 
 module.exports = router
