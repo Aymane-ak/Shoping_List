@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 
 router.post('/', async (req, res) => {
     if(! req.body.name){
-        return res.status(400).json({ error : error.message})
+        return res.status(400).json({ error : 'No complete body'})
     }
 
     try {
@@ -31,7 +31,7 @@ router.post('/', async (req, res) => {
 router.delete('/:id',async(req,res) => {
 
     if(!req.params.id) {
-        return res.status(400).json( {error : error.message})    
+        return res.status(400).json( {error : 'No complete body'})    
     }
     try {
         const result = await pool.query('DELETE FROM lists WHERE id = $1',[req.params.id])

@@ -1,35 +1,13 @@
-
 const pool    = require('../db');
 const express = require('express');
 const router  = express.Router();
 
-router.get('/:idList', async (req, res) => {
-    const result = await pool.query( 'SELECT * FROM products where list_id = $1', [req.params.id])
-    res.json(result.rows)
+
+router.get("/all", async(req,res) => {
+  const result = await pool.query('SELECT * FROM products')
+  res.json(result.rows)
 })
 
-router.post('/lists/:idList/product',async (req,res) => {
-
-
-    if(! req.params.idList){
-        return res.status(400).json({ error : "Id non fourni"} )
-    }
-    try {
-        const result = await pool.query('INSERT INTO products (name,description,price,list_id) VALUES ($1,$2,$3,$4)', [req.body.name,
-        req.body.description,req.body.price,req.params.idList])
-        res.json(result.rows);
-
-    }
-    catch(error) {
-
-        res.status(500).json( {error : error.message} )
-    }
-})
-
-
-/* 
-    APPEL API EXTERNE 
-*/
 
 router.get("/",async(req,res)=> {    
 
@@ -37,27 +15,72 @@ router.get("/",async(req,res)=> {
 
         return res.status(400).json( {error  : " No product name"} )
     }
-    try {
-        const response = await fetch (`https://world.openfoodfacts.net/api/v2/search?search_terms=${req.query.name}&json=true&page_size=10`)
-        const data     = await response.json()        
+       
+    try { 
+        
+        const query = await pool.query( 'SELECT * FROM products WHERE name ILIKE $1' , [`%${req.query.name}%`])
+        if ( query.rowCount > 0){
+
+            return res.json(query.rows)
+        }
+
+        const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${req.query.name}&search_simple=1&action=process&json=1&page_size=10`
+
+        const response = await fetch(url, {
+        headers: {
+            "Accept": "application/json",            
+            "Content-Type": "application/json",
+            "User-Agent": "Mozilla/5.0"
+    }
+})
+        const text = await response.text()
+        const data = JSON.parse(text)
+        // const response = await fetch (`https://world.openfoodfacts.net/api/v2/search?search_terms=${req.query.name}&json=true&page_size=10`)   
         const dattaSimplified = data.products.map( product =>(  {
+            
             name         : product.product_name,
             image_url    : product.image_front_url,
-            barcode      : product.id,
+            barcode      : product.code,
             brand        : product.brands,
             calories     : product.nutriments?.["energy-kcal"],
             product_size : product.product_quantity,
             nutriscore   : product.nutrition_grade_fr
         }))
         console.log("Résultat de la requête :", dattaSimplified)
-        res.json(dattaSimplified)
-        
+        res.json(dattaSimplified)        
     }
     catch ( error ){
         return res.status(500).json({error : error.message })
-    }
-    
+    } 
 })
+
+
+router.post('/', async(req,res) => {
+    if( !req.body.name || !req.body.image_url || !req.body.barcode || !req.body.brand || !req.body.calories || !req.body.product_size 
+        || !req.body.nutriscore) {
+
+        return res.status(400).json({ error : 'No complete body'})
+    }
+    try {
+            const response =  await pool.query ( 'INSERT INTO products (name,image_url,barcode,brand,calories,product_size,nutriscore)' + 
+                ' VALUES ( $1, $2, $3,$4, $5, $6, $7 ) RETURNING * ' , 
+                    [   req.body.name,
+                        req.body.image_url,
+                        req.body.barcode,
+                        req.body.brand,
+                        req.body.calories,
+                        req.body.product_size,
+                        req.body.nutriscore
+                    ])
+                    
+            return res.status(201).json(response.rows[0])
+    }
+    catch(error) {
+
+            res.status(500).json( { error : error.message})
+    }   
+})
+
 
 
 module.exports = router
