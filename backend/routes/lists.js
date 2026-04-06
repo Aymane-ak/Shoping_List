@@ -7,11 +7,11 @@ const router  = express.Router()
 router.get('/', async (req, res) => {   
     try {
         const result = await pool.query( 'SELECT * FROM lists')
-        res.json(result.rows)
+        return res.json(result.rows)
     }
     catch (error) {
-        return res.status(500).json({error : error.message})}
-    
+        return res.status(500).json({error : error.message})
+    }    
 })
 
 router.post('/', async (req, res) => {
@@ -35,7 +35,11 @@ router.delete('/:id',async(req,res) => {
     }
     try {
         const result = await pool.query('DELETE FROM lists WHERE id = $1',[req.params.id])
-        return res.status(200).json({ message : "Liste supprimée"})
+        if(result.rowCount === 0 ) {
+            return res.status(404).json({error : 'NOT FOUND '})
+        }
+
+        return res.status(200).json({ message: 'Liste supprimée' })
     }
     catch (error) {
         return res.status(500).json({ error : error.message})

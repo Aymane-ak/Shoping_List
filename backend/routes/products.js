@@ -5,7 +5,15 @@ const router  = express.Router();
 
 router.get("/all", async(req,res) => {
   const result = await pool.query('SELECT * FROM products')
-  res.json(result.rows)
+
+  if(result.rowCount === 0){
+
+    return res.json({ error : 'No Data'})
+  }
+  else {
+    return res.json(result.rows)
+  }
+   
 })
 
 
@@ -13,9 +21,8 @@ router.get("/",async(req,res)=> {
 
     if ( !req.query.name) {
 
-        return res.status(400).json( {error  : " No product name"} )
-    }
-       
+        return res.status(400).json( {error  : " BAD REQUEST : MISSING PRODUCT NAME"} )
+    }       
     try { 
         
         const query = await pool.query( 'SELECT * FROM products WHERE name ILIKE $1' , [`%${req.query.name}%`])
@@ -46,8 +53,7 @@ router.get("/",async(req,res)=> {
             product_size : product.product_quantity,
             nutriscore   : product.nutrition_grade_fr
         }))
-        console.log("Résultat de la requête :", dattaSimplified)
-        res.json(dattaSimplified)        
+        return res.json(dattaSimplified)        
     }
     catch ( error ){
         return res.status(500).json({error : error.message })
@@ -59,7 +65,7 @@ router.post('/', async(req,res) => {
     if( !req.body.name || !req.body.image_url || !req.body.barcode || !req.body.brand || !req.body.calories || !req.body.product_size 
         || !req.body.nutriscore) {
 
-        return res.status(400).json({ error : 'No complete body'})
+        return res.status(400).json({ error : 'MISSING PARAMETERS complete body'})
     }
     try {
             const response =  await pool.query ( 'INSERT INTO products (name,image_url,barcode,brand,calories,product_size,nutriscore)' + 
@@ -77,7 +83,7 @@ router.post('/', async(req,res) => {
     }
     catch(error) {
 
-            res.status(500).json( { error : error.message})
+            return res.status(500).json( { error : error.message})
     }   
 })
 
