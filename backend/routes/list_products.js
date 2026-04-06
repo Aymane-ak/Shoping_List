@@ -57,7 +57,7 @@ router.put('/:id', async (req,res) => {
     try {
             const result = await pool.query('UPDATE list_products SET bought = $1 , quantity = $2 WHERE id = $3 RETURNING * ', 
                 [req.body.bought,req.body.quantity, req.params.id])
-            return res.json(result)
+            return res.json(result.rows[0])
     }
     catch (error){
             return res.status(500).json({error : error.message})
