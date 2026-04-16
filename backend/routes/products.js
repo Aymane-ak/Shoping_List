@@ -33,21 +33,52 @@ router.get("/",async(req,res)=> {
 
         const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${req.query.name}&search_simple=1&action=process&json=1&page_size=10`
 
-        const response = await fetch(url, {
-        headers: {
-            "Accept": "application/json",            
-            "Content-Type": "application/json",
-            "User-Agent": "Mozilla/5.0"
-    }
-})
-        // const text = await response.text()
-        // const data = JSON.parse(text)
-        if (!response.ok) {
-            return res.status(500).json({ error: "API OpenFoodFacts failed" })
+        let data = null 
+
+        for (let i=0; i<5 ; i++) {
+
+            try {
+                    const response = await fetch(url, {
+                        headers: {
+                            "Accept"       : "application/json",
+                            "Content-Type" : "application/json",
+                            "User-Agent"   : "Mozilla/5.0"
+                            }
+                    })
+                    const text = await response.text()
+                    if (!response.ok) continue
+                    if (text.trim().startsWith('<')) continue
+                    data =  JSON.parse(text)
+                    break 
+            }
+            catch(e) {
+
+            }
         }
-        const data = await response.json()
-        // const response = await fetch (`https://world.openfoodfacts.net/api/v2/search?search_terms=${req.query.name}&json=true&page_size=10`)   
-        const dattaSimplified = data.products.map( product =>(  {
+
+        if(!data) {
+            return  res.json([])
+        }               
+        
+        // Pour etre utilisable en dehors du try catch !!     
+            
+        if(!data.products || !Array.isArray(data.products)){
+
+            return res.json([])
+        }
+
+            // const response = await fetch (`https://world.openfoodfacts.net/api/v2/search?search_terms=${req.query.name}&json=true&page_size=10`)   
+            const dattaSimplified = data.products.map( product =>(  {
+                
+                name         : product.product_name,
+                image_url    : product.image_front_url,
+                barcode      : product.code,
+                brand        : product.brands,
+                calories     : product.nutriments?.["energy-kcal"],
+                product_size : product.product_quantity,
+                nutriscore   : product.nutrition_grade_fr
+            }))
+            return res.json(dattaSimplified)        
             
     }
     catch ( error ){
@@ -81,7 +112,5 @@ router.post('/', async(req,res) => {
             return res.status(500).json( { error : error.message})
     }   
 })
-
-
 
 module.exports = router
