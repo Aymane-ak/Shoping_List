@@ -33,30 +33,45 @@ router.get("/",async(req,res)=> {
 
         const url = `https://world.openfoodfacts.org/cgi/search.pl?search_terms=${req.query.name}&search_simple=1&action=process&json=1&page_size=10`
 
-        const response = await fetch(url, {
-        headers: {
-            "Accept": "application/json",            
-            "Content-Type": "application/json",
-            "User-Agent": "Mozilla/5.0"
-    }
-})
-        const text = await response.text()
-        
-        if (!response.ok) {
-            return res.status(500).json({ error: "API OpenFoodFacts failed" })
+        let data = null 
+
+        for (let i=0; i<5 ; i++) {
+
+            try {
+                    const response = await fetch(url, {
+                        headers: {
+                            "Accept"       : "application/json",
+                            "Content-Type" : "application/json",
+                            "User-Agent"   : "Mozilla/5.0"
+                            }
+                    })
+                    const text = await response.text()
+                    if (!response.ok) continue
+                    if (text.trim().startsWith('<')) continue
+                    data =  JSON.parse(text)
+                    break 
+            }
+            catch(e) {
+
+            }
         }
 
-        if (text.trim().startsWith('<')){
-            return res.json([])
-        }
-        // Pour etre utilisable en dehors du try catch !! 
-        let data 
-        try{
-            data =  JSON.parse(text)            
-        }
-        catch {
+        if(!data) {
             return  res.json([])
         }
+        
+        
+        
+        
+
+        
+        // Pour etre utilisable en dehors du try catch !! 
+        
+       
+            
+       
+
+
 
         if(!data.products || !Array.isArray(data.products)){
 
