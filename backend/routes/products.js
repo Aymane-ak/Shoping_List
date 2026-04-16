@@ -41,19 +41,41 @@ router.get("/",async(req,res)=> {
     }
 })
         const text = await response.text()
-        const data = JSON.parse(text)
-        // const response = await fetch (`https://world.openfoodfacts.net/api/v2/search?search_terms=${req.query.name}&json=true&page_size=10`)   
-        const dattaSimplified = data.products.map( product =>(  {
+        
+        if (!response.ok) {
+            return res.status(500).json({ error: "API OpenFoodFacts failed" })
+        }
+
+        if (text.trim().startsWith('<')){
+            return res.json([])
+        }
+        // Pour etre utilisable en dehors du try catch !! 
+        let data 
+        try{
+            data =  JSON.parse(text)            
+        }
+        catch {
+            return  res.json([])
+        }
+
+        if(!data.products || !Array.isArray(data.products)){
+
+            return res.json([])
+        }
+
+            // const response = await fetch (`https://world.openfoodfacts.net/api/v2/search?search_terms=${req.query.name}&json=true&page_size=10`)   
+            const dattaSimplified = data.products.map( product =>(  {
+                
+                name         : product.product_name,
+                image_url    : product.image_front_url,
+                barcode      : product.code,
+                brand        : product.brands,
+                calories     : product.nutriments?.["energy-kcal"],
+                product_size : product.product_quantity,
+                nutriscore   : product.nutrition_grade_fr
+            }))
+            return res.json(dattaSimplified)        
             
-            name         : product.product_name,
-            image_url    : product.image_front_url,
-            barcode      : product.code,
-            brand        : product.brands,
-            calories     : product.nutriments?.["energy-kcal"],
-            product_size : product.product_quantity,
-            nutriscore   : product.nutrition_grade_fr
-        }))
-        return res.json(dattaSimplified)        
     }
     catch ( error ){
         return res.status(500).json({error : error.message })
