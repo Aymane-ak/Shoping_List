@@ -40,8 +40,12 @@ router.get("/",async(req,res)=> {
             "User-Agent": "Mozilla/5.0"
     }
 })
-        const text = await response.text()
-        const data = JSON.parse(text)
+        // const text = await response.text()
+        // const data = JSON.parse(text)
+        if (!response.ok) {
+            return res.status(500).json({ error: "API OpenFoodFacts failed" })
+        }
+        const data = await response.json()
         // const response = await fetch (`https://world.openfoodfacts.net/api/v2/search?search_terms=${req.query.name}&json=true&page_size=10`)   
         const dattaSimplified = data.products.map( product =>(  {
             

@@ -1,17 +1,20 @@
-// import { useState } from 'react'
-// import reactLogo from './assets/react.svg'
+import { BrowserRouter, Route, Routes } from 'react-router-dom'
 import './App.css'
-import ListsPage from './components/ListsPage'
+import Listspage from "./components/ListsPage"
+import ProductsPage from "./components/ProductsPage"
 
 function App() {
   return (
-    <div>
+    
+    <BrowserRouter> 
       <h1>Ma liste de courses</h1>
-      <ListsPage> </ListsPage>
-    </div>
- 
+      <Routes> 
+        <Route path ='/' element = {<Listspage/>}/> 
+        <Route path ='/lists/:list_id' element = {<ProductsPage/>}  />  
+      </Routes>      
+    </BrowserRouter>
+    
 
   )
 }
-
 export default App

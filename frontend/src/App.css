@@ -182,3 +182,8 @@
     border-right-color: var(--border);
   }
 }
+
+h1 {
+
+  background-color:  red;
+}

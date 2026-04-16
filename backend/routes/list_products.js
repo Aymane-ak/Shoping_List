@@ -23,13 +23,17 @@ router.get('/', async (req, res) => {
 
 router.post('/', async( req,res) => {
     try {
+        
         // 1. Récupérer le produit via son barcode (identifiant externe)
         const productQuery = await pool.query('SELECT id FROM products where barcode = $1 ', [req.body.barcode])
-            // Si le produit n'existe pas en base → erreur fonctionnelle
+        // Si le produit n'existe pas en base → erreur fonctionnelle
         if(productQuery.rowCount === 0 ) {
-            return res.status(404).json({error : 'PRODUCT NOT FOUND' })
+            //return res.status(404).json({error : 'PRODUCT NOT FOUND' })
+            const addPro = await pool.query('INSERT INTO products (name,image_url,barcode,brand,calories,product_size,nutriscore)'
+                + ' VALUES ( $1,$2,$3,$4,$5,$6,$7) RETURNING *', [])  
         }
-        // Construction de l'id à partir du resultat de la requette précédentt 
+
+        // Construction de l'id à partir du resultat de la requette précédent 
         const productId    = productQuery.rows[0].id
         // 2. Vérifier si le produit est déjà dans la liste
         // TODO: remplacer cette vérification par une contrainte UNIQUE en base (list_id, product_id)
