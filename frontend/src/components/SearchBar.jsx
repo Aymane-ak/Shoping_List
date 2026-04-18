@@ -38,15 +38,7 @@ const  getProducts = async () => {
 
                         </div>
                 ))
-
-
-                }
-        
-        
-        
-        
-
-
+                }      
     </div>)
 }
 
