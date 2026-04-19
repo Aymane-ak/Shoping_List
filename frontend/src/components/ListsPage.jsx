@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import ListForm from "./ListForm";
 
 
-export default function ListsPage() {
+function ListsPage() {
   const [lists, setLists]        = useState([]);
   const [showForm , setshowForm] = useState(false);
   const navigate = useNavigate()
@@ -11,6 +11,7 @@ export default function ListsPage() {
   const addList = (newList) => {
     setLists([...lists,newList])
   }
+
 
   useEffect(() => {
     const fetchLists = async () => {
@@ -30,10 +31,10 @@ export default function ListsPage() {
   return (<div>  {    
         lists.map( list => (
           
-           <div key = {list.id} onClick={() => navigate (`/lists/${list.id}`)}>
-              {list.id}
+           <div key = {list.id} onClick={() => navigate (`/lists/${list.id}`, {state : {listName : list.name} })}>
+              {/* {list.id} */}
               {list.name}
-              {list.created_at}         
+              {/* {list.created_at}          */}
               {/* <button onClick = { () => deletedList(list.id)}  > Supprimmer la liste </button> */}
               <button onClick = { (e) => {
                 e.stopPropagation();
@@ -49,3 +50,5 @@ export default function ListsPage() {
 
   </div>)
 }
+
+export default ListsPage

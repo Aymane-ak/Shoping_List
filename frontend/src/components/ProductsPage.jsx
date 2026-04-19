@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useParams } from "react-router";
+import { useLocation, useNavigate, useParams } from "react-router";
 import SearchBar from "./SearchBar";
 
 function ProductsPage (){
@@ -7,7 +7,9 @@ function ProductsPage (){
 const {list_id}                   = useParams();
 const [products, setProducts]     = useState([]);
 const [showSearch, setshowSearch] = useState(false);
-
+const navigate                    = useNavigate()
+const location                    = useLocation()
+const listName                    = location.state?.listName
 
 useEffect(()=> { 
     const fetchProduct = async () => {
@@ -18,7 +20,6 @@ useEffect(()=> {
 
     fetchProduct()
 }, [])
-
 
 const addProducts = async (product)  => {
 
@@ -43,7 +44,10 @@ const addProducts = async (product)  => {
         alert(data.error)
         return
     }
-    setProducts(prev => [...prev, data]) // voir les produits sans recharger la page 
+    const refresh = await fetch   (`${import.meta.env.VITE_API_URL}/lists/${list_id}/list_products`)
+    const refreshedData = await refresh.json()
+    setProducts(refreshedData)
+    // setProducts(prev => [...prev, data]) // voir les produits sans recharger la page 
     setshowSearch(false)
 }
 
@@ -74,14 +78,40 @@ const  changeToggleProduct = async (product)=> {
         return;
     }    
     setProducts(prev => prev.map(p => 
-            // p.id === product.id ? {...p, bought: !p.bought} : p
-            p.id === data.id ? data : p
+            p.id === product.id ? {...p, bought: !p.bought} : p
+            // p.id === data.id ? data : p
     ))     
+}
+
+const changeQuantityProduct = async  (product, newQuantity) => {
+    const res = await fetch (`${import.meta.env.VITE_API_URL}/lists/${list_id}/list_products/${product.id}`, 
+        {
+            method : 'PUT',
+            body   : JSON.stringify({
+                bought   : product.bought,
+                quantity : Number(newQuantity)
+            }
+            ),
+            headers: { 'Content-Type': 'application/json' }
+        }
+    )
+
+    const data = await res.json()
+    if(!res.ok){
+        alert(data.error)
+        return
+    }
+    setProducts(prev => prev.map(p => 
+            p.id === product.id ? {...p, quantity: Number(newQuantity)} : p
+            // p.id === data.id ? data : p
+    )) 
+
 }
 
 return (
     <div> 
-        
+        <h2> {listName}</h2>
+        <button onClick={() => navigate('/') }> Retour </button>
         <button onClick={() => {setshowSearch(true)}}> Ajouter un Produit </button>
         {showSearch && <SearchBar listId = {list_id} onAdd = {addProducts} /> }
     
@@ -103,28 +133,28 @@ return (
             <tr key = {product.id}>             
                     
                     <td>  {product.name}  </td>
-                    <td>  <img src = {product.image_url} alt ={ product.name} />  </td>
+                    <td>  <img src = {product.image_url} alt ={ product.name} width={50}/>  </td>
                     <td>  {product.brand}  </td>
                     <td>  {product.nutriscore}  </td>
                     <td>  {product.product_size}  </td>
                     <td>  
 
-                        <input type="checkbox" checked = {product.bought}  onChange={() => changeToggleProduct(product)}/>                      
+                        <input  type="checkbox" checked = {product.bought}  onChange={() => changeToggleProduct(product)}/>                      
+                        {/* <button onClick={() => changeToggleProduct(product)}>
+                        {product.bought ? '✅ Acheté' : '⬜ Non acheté'}
+                        </button> */}
                         
                     </td>
                     <td>  
-                        <select> 
-                            <option > 1 </option>
-                            <option> 2</option>
-                            <option> 3</option>
-                            <option> 4 </option>
-                            <option> 5 </option>
-                            <option> 6 </option>
-                            {/* value={product.quantity} */}
-                            
-
+                        <select  onChange={ (e)=> changeQuantityProduct(product,e.target.value)}> 
+                                    <option value={1}>1</option>
+                                    <option value={2}>2</option>
+                                    <option value={3}>3</option>
+                                    <option value={4}>4</option>
+                                    <option value={5}>5</option>
+                                    <option value={6}>6</option>         
                         </select>
-                        {product.quantity}  </td>
+                    </td>
                     <td> <button onClick={ () => deleteProduct(product.id)}> Supprimer </button> </td>               
                 </tr>
         ))

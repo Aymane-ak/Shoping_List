@@ -6,7 +6,6 @@ function SearchBar(props) {
 const [query, setQuery]     = useState('') 
 const [results, setResults] = useState([])
 
-
 const  getProducts = async () => {
     
     const product = await fetch (`${import.meta.env.VITE_API_URL}/products?name=${query}`)
