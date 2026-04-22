@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import toast from 'react-hot-toast';
 import { useNavigate } from "react-router-dom";
 import ListForm from "./ListForm";
 
@@ -6,10 +7,11 @@ import ListForm from "./ListForm";
 function ListsPage() {
   const [lists, setLists]        = useState([]);
   const [showForm , setshowForm] = useState(false);
-  const navigate = useNavigate()
+  const navigate                 = useNavigate()
 
   const addList = (newList) => {
     setLists([...lists,newList])
+    toast.success('Liste créée !')
   }
 
 
@@ -26,6 +28,7 @@ function ListsPage() {
     const deletedList = async (id) => {
       await fetch (`${import.meta.env.VITE_API_URL}/lists/${id}` , {method : 'DELETE'})
       setLists(lists.filter(list => list.id !== id ))  
+      toast.success('Liste supprimée !')
     }
 
   return (<div>  {    

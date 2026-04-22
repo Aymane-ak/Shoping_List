@@ -9,22 +9,16 @@ const [results, setResults] = useState([])
 const  getProducts = async () => {
     
     const product = await fetch (`${import.meta.env.VITE_API_URL}/products?name=${query}`)
-    const data = await product.json()
-    console.log(data);
-    setResults(data)
- 
+    const data    = await product.json()
+    setResults(data) 
 }
-
-    return (
-    
+    return (    
     <div> 
-
-        <input value={query} onChange={e=> setQuery(e.target.value)} placeholder=' Chercher un produit ...'/> 
-      
+        <input value={query} onChange={e=> setQuery(e.target.value)} placeholder=' Chercher un produit ...'/>      
 
         <button onClick={getProducts}> Search </button>
         
-                    {   results.map ( result => (
+                    {results.map ( result => (
 
                         <div key={result.barcode} onClick={() => props.onAdd(result)}> 
 
@@ -34,7 +28,6 @@ const  getProducts = async () => {
                             {result.brand}
                             {result.nutriscore}
                             {result.calories}
-
                         </div>
                 ))
                 }      

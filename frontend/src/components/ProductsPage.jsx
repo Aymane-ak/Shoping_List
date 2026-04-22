@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
+import toast from 'react-hot-toast';
 import { useLocation, useNavigate, useParams } from "react-router";
+import ProductCard from './ProductCard';
 import SearchBar from "./SearchBar";
 
 function ProductsPage (){
@@ -41,7 +43,7 @@ const addProducts = async (product)  => {
         })
     const data = await res.json()  
     if(!res.ok){
-        alert(data.error)
+        toast.error(data.error)
         return
     }
     const refresh = await fetch   (`${import.meta.env.VITE_API_URL}/lists/${list_id}/list_products`)
@@ -49,16 +51,18 @@ const addProducts = async (product)  => {
     setProducts(refreshedData)
     // setProducts(prev => [...prev, data]) // voir les produits sans recharger la page 
     setshowSearch(false)
+    toast.success(`Produit ${product.name}  ajouté à la liste !`)
 }
 
 const deleteProduct = async  (productId) => {
     const res  = await fetch (`${import.meta.env.VITE_API_URL}/lists/${list_id}/list_products/${productId}`, {method : 'DELETE'})
     const data = await res.json()
     if(!res.ok)  {
-        alert(data.error)
+        toast.error(data.error)
         return 
     }
     setProducts (prev => prev.filter(p=> p.id !== productId))
+    toast.success('Produit supprimé !')
     
 }
 
@@ -74,13 +78,14 @@ const  changeToggleProduct = async (product)=> {
         })
     const data  = await res.json();
     if(!res.ok){
-        alert(data.error)
+        toast.error(data.error)
         return;
     }    
     setProducts(prev => prev.map(p => 
             p.id === product.id ? {...p, bought: !p.bought} : p
             // p.id === data.id ? data : p
-    ))     
+    )) 
+    toast.success(product.bought ? 'Marqué non acheté' : 'Marqué acheté !')    
 }
 
 const changeQuantityProduct = async  (product, newQuantity) => {
@@ -98,13 +103,14 @@ const changeQuantityProduct = async  (product, newQuantity) => {
 
     const data = await res.json()
     if(!res.ok){
-        alert(data.error)
+        toast.error(data.error)
         return
     }
     setProducts(prev => prev.map(p => 
             p.id === product.id ? {...p, quantity: Number(newQuantity)} : p
             // p.id === data.id ? data : p
     )) 
+    toast.success(`Quantité du produit ${product.name} changéz : ${Number(newQuantity)}`)
 
 }
 
@@ -130,33 +136,13 @@ return (
 
         <tbody>        
         { products.map( product => (
-            <tr key = {product.id}>             
-                    
-                    <td>  {product.name}  </td>
-                    <td>  <img src = {product.image_url} alt ={ product.name} width={50}/>  </td>
-                    <td>  {product.brand}  </td>
-                    <td>  {product.nutriscore}  </td>
-                    <td>  {product.product_size}  </td>
-                    <td>  
-
-                        <input  type="checkbox" checked = {product.bought}  onChange={() => changeToggleProduct(product)}/>                      
-                        {/* <button onClick={() => changeToggleProduct(product)}>
-                        {product.bought ? '✅ Acheté' : '⬜ Non acheté'}
-                        </button> */}
-                        
-                    </td>
-                    <td>  
-                        <select  onChange={ (e)=> changeQuantityProduct(product,e.target.value)}> 
-                                    <option value={1}>1</option>
-                                    <option value={2}>2</option>
-                                    <option value={3}>3</option>
-                                    <option value={4}>4</option>
-                                    <option value={5}>5</option>
-                                    <option value={6}>6</option>         
-                        </select>
-                    </td>
-                    <td> <button onClick={ () => deleteProduct(product.id)}> Supprimer </button> </td>               
-                </tr>
+            <ProductCard 
+                key              = {product.id}
+                product          = {product}
+                OnToggle         = {changeToggleProduct}
+                OnDelete         = {deleteProduct}
+                OnQuantityChange = {changeQuantityProduct}                     
+            />                  
         ))
         }
         </tbody>
