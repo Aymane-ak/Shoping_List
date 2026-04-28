@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import toast from 'react-hot-toast';
-import { useLocation, useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router";
 import ProductCard from './ProductCard';
 import SearchBar from "./SearchBar";
 
@@ -10,8 +10,9 @@ const {list_id}                   = useParams();
 const [products, setProducts]     = useState([]);
 const [showSearch, setshowSearch] = useState(false);
 const navigate                    = useNavigate()
-const location                    = useLocation()
-const listName                    = location.state?.listName
+
+// const location                    = useLocation()
+// const listName                    = location.state?.listName
 
 useEffect(()=> { 
     const fetchProduct = async () => {
@@ -110,32 +111,20 @@ const changeQuantityProduct = async  (product, newQuantity) => {
             p.id === product.id ? {...p, quantity: Number(newQuantity)} : p
             // p.id === data.id ? data : p
     )) 
-    toast.success(`Quantité du produit ${product.name} changéz : ${Number(newQuantity)}`)
+    toast.success(`Quantité du produit ${product.name} changée : ${Number(newQuantity)}`)
 
 }
 
 return (
     <div> 
-        <h2> {listName}</h2>
-        
-        <button onClick={() => navigate('/') }> Retour </button>
-        <button onClick={() => {setshowSearch(true)}}> Ajouter un Produit </button>
-        {showSearch && <SearchBar listId = {list_id} onAdd = {addProducts} /> }
-    
-    <table border={2}>  
-        <thead>
-            <tr>
-              <td>Name</td>
-              <td>Image</td>
-              <td>Marque</td>
-              <td>Nutriscore</td>
-              <td>TAILLE</td>
-              <td>Achete</td>
-              <td>Quantite</td>
-            </tr>
-        </thead>
+         <button onClick={() => navigate('/') } > Retour </button>
+        {/* <h2> {listName} AA</h2> */}
 
-        <tbody>        
+        <div className="mt-4 flex gap-2 mb-4">       
+        <button  className= "shadow-xl bg-blue-500 rounded-full text-sm px-2 py-1 cursor-pointer" onClick={() => {setshowSearch(true)}} > Ajouter le Produit </button>
+         { showSearch && <SearchBar listId = {list_id} onAdd = {addProducts} /> }
+
+         </div>      
         { products.map( product => (
             <ProductCard 
                 key              = {product.id}
@@ -146,13 +135,10 @@ return (
             />                  
         ))
         }
-        </tbody>
-    </table>
-    </div>
-    
-    )
-    }
 
+    </div>    
+    )
+}
 export default ProductsPage
 
 

@@ -34,13 +34,7 @@ function ListsPage() {
     setLists(lists.filter(list => list.id !== id ))  
     toast.success('Liste supprimée !')
   }
-
-//   const deleteToggle = (selectedId) => {
-    
-//     if ( selectedId !=  null ){
-//       setSelectedId === true       
-//   }
-// }
+  
   return (
   <div className="max-w-md mx-auto p-4">  
   
@@ -49,11 +43,9 @@ function ListsPage() {
           
       <div key = {list.id} onClick={() => navigate (`/lists/${list.id}`, {state : {listName : list.name} })} className={carStyle}>
         
-        {list.name}
-        
+        {list.name}       
             
         <input type="radio" onClick={(e) => {e.stopPropagation();setSelectedId(list.id)}} checked={selectedId === list.id} onChange={() => setSelectedId(list.id)} />  
-
                         
       </div>          
         )        
@@ -61,9 +53,10 @@ function ListsPage() {
     }
 
     {selectedId && <button onClick = { () => deletedList(selectedId)} className={buttonStyle}  > Supprimer la liste </button> } 
-    
+
     <div className="flex justify-center">
-    <button onClick = {handleOpenForm} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-xl m-5"> Ajouter une liste </button>      
+    <button onClick = {handleOpenForm} className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-full shadow-xl m-5"> Ajouter une liste </button>  
+     
     </div>  
     {showForm && <ListForm onAdd = {addList}> </ListForm>} 
 

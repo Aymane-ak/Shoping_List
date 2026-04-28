@@ -23,8 +23,7 @@ function ListForm (props){
 return (
 
     <div> 
-        <div className="mt-4 flex gap-2">
-            
+        <div className="mt-4 flex gap-2">            
             <input className={styleInput} placeholder="Nom de la liste" value={name} onChange={e=> setName(e.target.value)}/> 
             <button onClick={ListToAdd} className="shadow-xl bg-blue-500 rounded-full"> Créer </button>
 
