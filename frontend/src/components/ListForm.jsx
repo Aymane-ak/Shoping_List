@@ -4,6 +4,7 @@ function ListForm (props){
 
 
     const [name, setName] = useState('')
+    const  styleInput = "border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500"
 
 
     const ListToAdd = async () => {
@@ -19,12 +20,16 @@ function ListForm (props){
         props.onAdd(data)
 }
 
-return <div> 
+return (
 
-    <input className="ListName" placeholder="Nom de la liste" value={name} onChange={e=> setName(e.target.value)}/> 
+    <div> 
+        <div className="mt-4 flex gap-2">
+            
+            <input className={styleInput} placeholder="Nom de la liste" value={name} onChange={e=> setName(e.target.value)}/> 
+            <button onClick={ListToAdd} className="shadow-xl bg-blue-500 rounded-full"> Créer </button>
 
-    <button onClick={ListToAdd}> Créer </button>
-
-</div>
+        </div>
+    </div>
+    )
 }
 export default ListForm ;

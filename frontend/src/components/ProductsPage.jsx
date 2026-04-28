@@ -117,11 +117,12 @@ const changeQuantityProduct = async  (product, newQuantity) => {
 return (
     <div> 
         <h2> {listName}</h2>
+        
         <button onClick={() => navigate('/') }> Retour </button>
         <button onClick={() => {setshowSearch(true)}}> Ajouter un Produit </button>
         {showSearch && <SearchBar listId = {list_id} onAdd = {addProducts} /> }
     
-    <table border={2} style={{padding : "3em", margin : "3em"}}>  
+    <table border={2}>  
         <thead>
             <tr>
               <td>Name</td>
