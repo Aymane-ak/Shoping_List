@@ -42,7 +42,7 @@ function ListsPage() {
       <Plus className='w-7 h-7 cursor-pointer text-blue-500 hover:text-green-500' onClick = {handleOpenForm}/>
    </div> 
 
-    { lists.map( list => (         
+    { Array.isArray(lists) && lists.map( list => (         
           
       <div key = {list.id} onClick={() => navigate (`/lists/${list.id}`, {state : {listName : list.name} })} className={carStyle}>        
         {list.name}  
