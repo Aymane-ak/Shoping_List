@@ -13,7 +13,7 @@ return (
             <p className="text-sm text-gray-500">  NUTRISCORE :  {product.nutriscore} </p> 
         </div>
 
-        <select  onChange={ (e)=> OnQuantityChange(product,e.target.value)} className="border rounded px-2 py-1 text-sm"> 
+        <select  onChange={ (e)=> OnQuantityChange(product,Number (e.target.value))} className="border rounded px-2 py-1 text-sm"> 
             {[1,2,3,4,5,6].map(n => <option key={n} value={n}> {n} </option> )} 
         </select>
 

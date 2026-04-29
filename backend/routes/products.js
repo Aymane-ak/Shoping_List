@@ -3,15 +3,18 @@ const express = require('express');
 const router  = express.Router();
 
 
-router.get("/all", async(req,res) => {
-  const result = await pool.query('SELECT * FROM products')
+router.get("/all", async(req,res) => {  
+  try {
+    const result = await pool.query('SELECT * FROM products')
 
-  if(result.rowCount === 0){
+    if(result.rowCount === 0){
 
     return res.json({ error : 'No Data'})
-  }
-  else {
+    }
     return res.json(result.rows)
+  } 
+  catch (error) {
+    return res.status(500).json({ error : error.message})
   }
    
 })
