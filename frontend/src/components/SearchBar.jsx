@@ -29,15 +29,14 @@ function SearchBar(props) {
             toast.error("Impossible de contacter le serveur");
             console.error(error);
         }
-    }    
-        
-
+    }  
         return (    
         <div> 
-            <input className = "border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none focus:ring-2 focus:ring-blue-500" value={query} onChange={e=> setQuery(e.target.value)} placeholder=' Chercher un produit ...'/>      
+            <div className='mb-4 flex items-center gap-2'> 
+                <input className = "border border-gray-300 rounded-lg px-3 py-2 w-full focus:outline-none  focus:ring-2 focus:ring-blue-500" value={query} onChange={e=> setQuery(e.target.value)} placeholder=' Chercher un produit ...'/>                  
+                <button  className = "cursor-pointer hover:text-blue-500" onClick={getProducts}> Search </button>
 
-            <button  className = "" onClick={getProducts}> Search </button>
-            
+            </div>          
                         {results.map ( result => (
 
                             <div key={result.barcode} onClick={() => props.onAdd(result)} className='flex items-center gap-3 p-3  hover: bg-grey cursor-pointer border-b'> 
@@ -53,8 +52,4 @@ function SearchBar(props) {
                     }      
         </div>)
 }
-
 export default SearchBar;
-
-//   <input   className={styleInput} placeholder="Nom du produit" value={name} onChange={e=> setName(e.target.value)} /> 
-//             <button  className= "shadow-xl bg-blue-500 rounded-full" onClick={() => {setshowSearch(true)}} > Ajouter le Produit </button>

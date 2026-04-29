@@ -85,7 +85,7 @@ router.delete('/:id', async (req,res)=> {
     }
     try {
             const  response = await pool.query('DELETE FROM list_products WHERE id = $1 AND list_id = $2', [req.params.id, req.params.list_id])
-            console.log(response)
+            // console.log(response)
             if(response.rowCount===0){
                 
                 return res.status(404).json({error : 'NOT FOUND'})

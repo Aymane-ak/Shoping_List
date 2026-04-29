@@ -1,3 +1,4 @@
+import { User } from 'lucide-react'
 import { Toaster } from 'react-hot-toast'
 import { useLocation } from 'react-router'
 import { BrowserRouter, Route, Routes } from 'react-router-dom'
@@ -16,8 +17,11 @@ function AppContent () {
      <div className='min-h-screen bg-gray-50'>
 
       <Toaster />
-      <header className="bg-white shadow-sm p-4 ">
-        <h1 className='text-2xl font-bold text-gray-800 mb-6 flex justify-center' > {title} </h1>
+      <header className="bg-white shadow-sm p-4">
+        <div className='flex items-center justify-between'>           
+          <h1 className='text-2xl font-bold text-gray-800' > {title} </h1>
+          <User className='w-8 h-8 cursor-pointer text-grey-600'/> 
+        </div>         
       </header>
 
 
@@ -26,6 +30,7 @@ function AppContent () {
         <Route path ='/' element = {<Listspage/>}/> 
         <Route path ='/lists/:list_id' element = {<ProductsPage/>} />  
       </Routes> 
+      
       </main>
 
      </div>
