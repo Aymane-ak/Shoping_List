@@ -23,18 +23,26 @@ router.get('/', async (req, res) => {
 
 router.post('/', async( req,res) => {
     try {
+        let productId
         
         // 1. Récupérer le produit via son barcode (identifiant externe)
         const productQuery = await pool.query('SELECT id FROM products where barcode = $1 ', [req.body.barcode])
+
         // Si le produit n'existe pas en base → erreur fonctionnelle
         if(productQuery.rowCount === 0 ) {
-            //return res.status(404).json({error : 'PRODUCT NOT FOUND' })
-            const addPro = await pool.query('INSERT INTO products (name,image_url,barcode,brand,calories,product_size,nutriscore)'
-                + ' VALUES ( $1,$2,$3,$4,$5,$6,$7) RETURNING *', [])  
+            const addPro = await pool.query('INSERT INTO products (name,image_url,barcode,brand,calories,product_size,nutriscore)' + ' VALUES ( $1,$2,$3,$4,$5,$6,$7) RETURNING *', 
+                [req.body.name,req.body.image_url,req.body.barcode,req.body.brand,req.body.calories,req.body.product_size,req.body.nutriscore])
+            productId    = addPro.rows[0].id 
+            // return res.status(404).json({error : 'PRODUCT NOT FOUND' })            
+        }
+        else {
+
+            
+            productId    = productQuery.rows[0].id
         }
 
         // Construction de l'id à partir du resultat de la requette précédent 
-        const productId    = productQuery.rows[0].id
+       
         // 2. Vérifier si le produit est déjà dans la liste
         // TODO: remplacer cette vérification par une contrainte UNIQUE en base (list_id, product_id)
         // et gérer l'erreur 23505 côté backend
@@ -54,9 +62,9 @@ router.post('/', async( req,res) => {
 
 
 router.put('/:id', async (req,res) => {
-    if( !req.body.bought || !req.body.quantity ){
+    if( req.body.bought === undefined || req.body.quantity === undefined){
 
-        return res.status(404).json({error : 'BAD REQUEST '})
+        return res.status(400).json({error : 'BAD REQUEST '})
     }
     try {
             const result = await pool.query('UPDATE list_products SET bought = $1 , quantity = $2 WHERE id = $3 RETURNING * ', 
@@ -76,9 +84,10 @@ router.delete('/:id', async (req,res)=> {
         return res.status(400).json('MISSING ID')
     }
     try {
-            const  response = await pool.query('DELETE FROM list_products WHERE product_id = $1 AND list_id = $2', [req.params.id, req.params.list_id])
+            const  response = await pool.query('DELETE FROM list_products WHERE id = $1 AND list_id = $2', [req.params.id, req.params.list_id])
+            // console.log(response)
             if(response.rowCount===0){
-
+                
                 return res.status(404).json({error : 'NOT FOUND'})
             }
             return res.status(200).json({ message: 'Produit supprimé de la liste' })
