@@ -124,7 +124,7 @@ function ProductsPage (){
                 <Search className='w-6 h-6 cursor-pointer hover:text-blue-500' onClick={() => {setshowSearch(true)}}/>
             </div>      
                 { showSearch && <SearchBar listId = {list_id} onAdd = {addProducts} /> }
-                { sortedProducts.map( product => (
+                { Array.isArray(sortedProducts) && sortedProducts.map( product => (
                     <ProductCard 
                     
                         key              = {product.id}

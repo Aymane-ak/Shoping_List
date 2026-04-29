@@ -37,7 +37,7 @@ function SearchBar(props) {
                 <button  className = "cursor-pointer hover:text-blue-500" onClick={getProducts}> Search </button>
 
             </div>          
-                        {results.map ( result => (
+                        { Array.isArray(results) &&results.map ( result => (
 
                             <div key={result.barcode} onClick={() => props.onAdd(result)} className='flex items-center gap-3 p-3  hover: bg-grey cursor-pointer border-b'> 
 
